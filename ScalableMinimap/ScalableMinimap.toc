@@ -1,0 +1,4 @@
+## Interface: 11200
+## Title: ScalableMinimap
+## Notes: Simple minimap scaling with slash command
+ScalableMinimap.lua
