@@ -1,4 +1,8 @@
 ## Interface: 11200
 ## Title: ScalableMinimap
-## Notes: Simple minimap scaling with slash command
+## Notes: Scalable and movable minimap with fixed zone text and clock.
+## Author: chazzka
+## Version: 1.0
+## SavedVariables: ScalableMinimapDB
+
 ScalableMinimap.lua

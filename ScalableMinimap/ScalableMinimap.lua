@@ -1,22 +1,40 @@
--- Default values
+-- ============================================================
+-- ScalableMinimap Addon
+-- Saves minimap scale and position between sessions
+-- ============================================================
+
+-- Saved variables table (loaded from SavedVariables)
+ScalableMinimapDB = ScalableMinimapDB or {}
+
+-- Default values (will be overwritten after PLAYER_LOGIN)
 local currentScale = 1.2
 local posX = -20
 local posY = -20
 local posPoint = "TOPRIGHT"
 
+-- Save current settings to SavedVariables
+local function SaveSettings()
+    ScalableMinimapDB.scale = currentScale
+    ScalableMinimapDB.posX = posX
+    ScalableMinimapDB.posY = posY
+end
+
+-- Apply minimap scale
 local function ApplyMinimapScale(scale)
     currentScale = scale
 
-    -- Scale ONLY the minimap cluster (the entire minimap block)
+    -- Scale the entire minimap cluster as one unit
     MinimapCluster:SetScale(scale)
 
+    SaveSettings()
     DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ScalableMinimap:|r scale set to " .. scale)
 end
 
+-- Apply minimap position
 local function ApplyMinimapPosition()
-    -- Reposition the minimap cluster
     MinimapCluster:ClearAllPoints()
     MinimapCluster:SetPoint(posPoint, UIParent, posPoint, posX, posY)
+    SaveSettings()
 end
 
 -- /minimapscale X
@@ -52,7 +70,16 @@ end
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
-    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ScalableMinimap:|r addon loaded.")
+
+    -- Load saved values NOW (correct timing)
+    currentScale = ScalableMinimapDB.scale or 1.2
+    posX = ScalableMinimapDB.posX or -20
+    posY = ScalableMinimapDB.posY or -20
+
+    -- Welcome message with instructions
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99ScalableMinimap loaded.|r")
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99Usage:|r /minimapscale <number>  |  /minimappos <x> <y>")
+    DEFAULT_CHAT_FRAME:AddMessage("|cff33ff99Example:|r /minimapscale 1.4   /minimappos -20 -40")
 
     -- Fix: Zone text stays anchored in the top-right corner
     if MinimapZoneText then
@@ -68,6 +95,7 @@ f:SetScript("OnEvent", function()
         Clock:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -10, -30)
     end
 
+    -- Apply saved settings
     ApplyMinimapScale(currentScale)
     ApplyMinimapPosition()
 end)
